@@ -1,0 +1,28 @@
+﻿@model QuizPlatform.Models.Auth.LoginDto
+
+<h1>User Login Form</h1>
+@using (Html.BeginForm("Login", "Auth", FormMethod.Post))
+{
+
+    <div class="form-group">
+
+    <span>Email:</span>
+        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+    <br />
+    </div>
+    
+    <div class="form-group">
+
+    <span>Password:</span>
+        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+    <br />
+    </div>
+
+
+    <input id="Submit" class="btn btn-primary" type="submit" value="submit" />
+}
+<br />
+
+<div class="container">
+    Register   <a asp-area="" asp-controller="Auth" asp-action="Register">Register    </a>
+</div>

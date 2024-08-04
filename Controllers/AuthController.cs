@@ -71,7 +71,7 @@ namespace QuizPlatform.Controllers
                     Secure = true, 
                     Expires = DateTime.UtcNow.AddDays(30) 
                 });
-                return Redirect("");
+                return Redirect("/Home/Index");
             }
             return View();
 

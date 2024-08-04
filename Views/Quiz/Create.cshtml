@@ -1,7 +1,6 @@
 ﻿@model QuizPlatform.DTO.Quiz.QuizDto
 
 
-<h1>Create Quiz</h1>
 @if (ViewData["Error"] != null)
 {
     <div class="alert alert-danger" role="alert">
@@ -15,23 +14,26 @@
 }
 <h1>Create Quiz</h1>
 <form id="quizForm" enctype="multipart/form-data"asp-controller="Quiz" asp-action="Create">
-    <div>
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
+    <div class="form-group">
+        <label class="form-control"  for="name">Name:</label>
+        <input class="form-control" type="text" id="name" name="name" required>
     </div>
-    <div>
-        <label for="description">Description:</label>
-        <textarea id="description" name="description"></textarea>
+    <div class="form-group">
+        <label class ="form-control" for="description">Description:</label>
+        <textarea id="description"  class ="form-control" name="description"></textarea>
+    </div >
+    <div class="form-group">
+        <label  class="form-control" for= "Image">Image:</label>
+        <input type="file" class="form-control"  id="image" name="image" accept="image/*" required>
     </div>
-    <div>
-        <label for="Image">Image:</label>
-        <input type="file" id="image" name="image" accept="image/*" required>
-    </div>
-    <div>
-        <label for="date">Date:</label>
-        <input type="date" id="date" name="date">
+    <div class="form-group">
+        <label class="form-control" for="date">Date:</label>
+        <input class="form-control" type="date" id="date" name="date">
     </div>
 
 
-    <button type="submit">Submit</button>
+    <button class="btn btn-primary" type="submit">Submit</button>
 </form>
+
+
+

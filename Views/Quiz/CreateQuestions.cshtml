@@ -1,0 +1,119 @@
+﻿<head>
+   
+    <title>Manage Questions</title>
+    <style>
+        .question-container {
+            margin-bottom: 20px;
+        }
+
+        .options-container {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Manage Questions</h2>
+    <div id="questions-container">
+        <!-- Questions will be dynamically added here -->
+    </div>
+    <button onclick="addQuestion()">Add Question</button>
+    <button onclick="submitQuestions()">Submit Questions</button>
+
+    <script>
+        let questions = [];
+
+        function addQuestion() {
+            const question = {
+                Id: questions.length + 1,
+                QuestionText: '',
+                AnswerType: 0,
+                Answer: null,
+                Options: []
+            };
+
+            questions.push(question);
+            renderQuestions();
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            questions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question-container');
+                questionDiv.innerHTML = `
+                                    <h3>Question ${index + 1}</h3>
+                                                    <label for="question-${index}-text" class="form-control">Question Text:</label>
+                                                    <input type="text" id="question-${index}-text"class="form-control" value="${question.QuestionText}" onchange="updateQuestionText(${index}, this.value)">
+
+                                                    <label for="question-${index}-answerType" class="form-control">Answer Type:</label>
+                                    <select id="question-${index}-answerType" onchange="updateAnswerType(${index}, this.value)">
+                                        <option value="0" ${question.AnswerType === 0 ? 'selected' : ''}>0 - No Options</option>
+                                        <option value="1" ${question.AnswerType === 1 ? 'selected' : ''}>1 - With Options</option>
+                                    </select>
+
+                                    <div id="options-${index}" class="options-container" style="display: ${question.AnswerType === 1 ? 'block' : 'none'};">
+                                        <button onclick="addOption(${index})">Add Option</button>
+                                        <div id="options-list-${index}">
+                                            ${renderOptionsHTML(question.Options, index)}
+                                        </div>
+                                    </div>
+                                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function renderOptionsHTML(options, questionIndex) {
+            return options.map((option, index) => `
+                                <div>
+                                    <label for="option-${questionIndex}-${index}">Option ${index + 1}:</label>
+                                    <input type="text" id="option-${questionIndex}-${index}" value="${option.optionText}" onchange="updateOption(${questionIndex}, ${index}, this.value)">
+                                </div>
+                            `).join('');
+        }
+
+        function updateQuestionText(index, value) {
+            questions[index].QuestionText = value;
+        }
+
+        function updateAnswerType(index, value) {
+            questions[index].AnswerType = parseInt(value);
+            renderQuestions(); // Re-render to show/hide options
+        }
+
+        function addOption(questionIndex) {
+            const optionText = prompt('Enter option text:');
+            if (optionText) {
+                questions[questionIndex].Options.push({ optionText });
+                renderQuestions(); // Re-render to show updated options
+            }
+        }
+
+        function updateOption(questionIndex, optionIndex, value) {
+            questions[questionIndex].Options[optionIndex].optionText = value;
+        }
+
+        function submitQuestions() {
+            fetch('/Quiz/CreateQuestions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(questions)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    alert('Questions submitted successfully!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while submitting questions.');
+                });
+        }
+
+        // Initial render on page load
+        renderQuestions();
+    </script>
+</body>

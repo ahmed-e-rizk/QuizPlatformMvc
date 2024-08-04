@@ -13,5 +13,7 @@ namespace QuizPlatform.DTO.Quiz
         public IFormFile Image { get; set; }
 
         public DateTime? Date { get; set; }
+        public List<QuestionDto> Questions { get; set; }=new List<QuestionDto>();
+         
     }
 }

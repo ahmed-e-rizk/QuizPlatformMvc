@@ -33,6 +33,6 @@ app.UseMiddleware<TokenMiddleware>();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Quiz}/{action=Create}");
+    pattern: "{controller=Auth}/{action=Login}");
 
 app.Run();

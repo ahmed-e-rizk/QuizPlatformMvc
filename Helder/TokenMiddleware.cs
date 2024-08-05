@@ -10,10 +10,10 @@
         private readonly RequestDelegate _next;
         private readonly HttpClient _httpClient;
 
-        public TokenMiddleware(RequestDelegate next, HttpClient httpClient)
+        public TokenMiddleware(RequestDelegate next, IHttpClientFactory  httpClient)
         {
             _next = next;
-            _httpClient = httpClient;
+            _httpClient = httpClient.CreateClient("Quiz");
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -26,7 +26,7 @@
                 // Refresh the token
                 var x = JsonContent.Create(new TokenResultDto {RefreshToken = refreshToken});
 
-                var response = await _httpClient.PostAsync("/RefreshToken", x);
+                var response = await _httpClient.PostAsync("Auth/RefreshToken", x);
                var res= await response.Content.ReadFromJsonAsync<Response<TokenResultDto>>();
 
                 // Update the cookie with the new access token

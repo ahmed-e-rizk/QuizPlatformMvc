@@ -2,6 +2,73 @@
     ViewData["Title"] = "Home Page";
 }
 
+
+@model List<QuizPlatform.DTO.Quiz.QuizResultDto>
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzes List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .quiz-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .quiz-item {
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .quiz-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<h1>Quizzes</h1>
+<ul class="quiz-list">
+    @foreach (var quiz in Model)
+    {
+        <li class="quiz-item">
+            <img src="@quiz.Image" alt="@quiz.Name "   >
+                <h2>Quiz Name :@quiz.Name <a class="edit-link" asp-controller="Quiz" asp-action="Edit" asp-route-id="@quiz.Id">Edit</a> </h2>
+                <p>Description :@quiz.Description</p>
+            <small>Date: @quiz.Date.Value</small>
+                @foreach (var question in quiz.Questions)
+                {
+                    <h2>QuestionText :@question.QuestionText</h2>
+                    @if (question.AnswerType == 0)
+                    {
+                        <p>Question Text </p>
+
+                    }
+                    else
+                    {
+                        
+                       
+                        @foreach (var option in question.Options)
+                        {
+                            <p>Option : @option.OptionText</p>
+
+                        }
+                    }
+
+
+                }
+        </li>
+    }
+</ul>
+</body>
+
+
 <div class="container">
     Create   <a asp-controller="Quiz" asp-action="Create">CreateQuiz    </a>
 </div>

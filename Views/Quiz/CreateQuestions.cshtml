@@ -12,19 +12,32 @@
     </style>
 </head>
 <body>
-    <h2>Manage Questions</h2>
-    <div id="questions-container">
-        <!-- Questions will be dynamically added here -->
-    </div>
-    <button onclick="addQuestion()">Add Question</button>
-    <button onclick="submitQuestions()">Submit Questions</button>
 
-    <script>
+
+    @if (ViewData["Error"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @foreach (var error in ViewBag.Error)
+            {
+                @error.Message
+
+                <br />
+            }
+        </div>
+    }
+<h2>Manage Questions</h2>
+<div id="questions-container">
+    <!-- Questions will be dynamically added here -->
+</div>
+<button onclick="addQuestion()">Add Question</button>
+<button onclick="submitQuestions()">Submit Questions</button>
+
+<script>
         let questions = [];
 
         function addQuestion() {
             const question = {
-                Id: questions.length + 1,
+                Id: 0,
                 QuestionText: '',
                 AnswerType: 0,
                 Answer: null,
@@ -106,11 +119,8 @@
                 .then(data => {
                     console.log('Success:', data);
                     alert('Questions submitted successfully!');
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while submitting questions.');
                 });
+               
         }
 
         // Initial render on page load

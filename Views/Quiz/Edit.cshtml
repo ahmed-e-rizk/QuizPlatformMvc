@@ -1,0 +1,332 @@
+﻿@* @model QuizPlatform.DTO.Quiz.QuizResultDto
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzes List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .quiz-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .quiz-item {
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .quiz-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<h1>Quizzes</h1>
+<ul class="quiz-list">
+    <form id="EditForm" enctype="multipart/form-data"asp-controller="Quiz" asp-action="Create">
+
+        <li class="quiz-item">
+            <img src="@Model.Image" alt="@Model.Name ">
+            <h2>Quiz Name :@Model.Name  </h2>
+            <p>Description :@Model.Description</p>
+            <small>Date: @Model.Date.Value</small>
+            @foreach (var question in Model.Questions)
+            {
+                <h2>QuestionText :@question.QuestionText</h2>
+                @if (question.AnswerType == 0)
+                {
+                    <p>Question Text </p>
+
+                }
+                else
+                {
+
+
+                    @foreach (var option in question.Options)
+                    {
+                        <p>Option : @option.OptionText</p>
+
+                    }
+                }
+
+            }
+            
+        </li>
+    </form>
+
+</ul>
+</body> *@
+
+                
+@*            //     @model QuizPlatform.DTO.Quiz.QuizResultDto
+ *@
+@* @{
+    ViewData["Title"] = "Edit Quiz";
+}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-group button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Edit Quiz</h1>
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label asp-for="Name">Quiz Name</label>
+            <input asp-for="Name" />
+            <span asp-validation-for="Name"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description">Description</label>
+            <textarea asp-for="Description"></textarea>
+            <span asp-validation-for="Description"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Image">Image URL</label>
+            <input asp-for="Image" />
+            <span asp-validation-for="Image"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Date">Date</label>
+            <input asp-for="Date" type="date" />
+            <span asp-validation-for="Date"></span>
+        </div>
+
+        <div class="form-group">
+            <button type="submit">Save Changes</button>
+        </div>
+    </form>
+
+    <a class="button" asp-controller="Home" asp-action="Index">Back to List</a>
+</body>
+ *@
+ @model QuizPlatform.DTO.Quiz.QuizResultDto
+
+@{
+    ViewData["Title"] = "Edit Quiz";
+}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-group button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .question-group {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .option-group {
+            margin-left: 20px;
+            margin-bottom: 5px;
+        }
+        .option-group input {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Edit Quiz</h1>
+    <form asp-action="Edit"  method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Quiz Name</label>
+            <input name="Name" value="@Model.Name" />
+        </div>
+
+        <div class="form-group">
+            <label>Description</label>
+            <textarea name="Description">@Model.Description</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Image URL</label>
+            <input name="Image" type="file" />
+        </div>
+
+        <div class="form-group">
+            <label>Date</label>
+            <input name="Date" type="date" value="@Model.Date?.ToString("yyyy-MM-dd")" />
+        </div>
+
+        <div id="questions-container">
+            @for (var i = 0; i < Model.Questions.Count; i++)
+            {
+                var question = Model.Questions[i];
+                <div class="question-group" data-index="@i">
+                    <h3>Question @i</h3>
+                    <div class="form-group">
+                        <label>Question Text</label>
+                        <input name="Questions[@i].QuestionText" value="@question.QuestionText" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Answer Type</label>
+                        <select name="Questions[@i].AnswerType" onchange="updateAnswerType(@i)">
+                           @*  <option value="0" @(question.AnswerType == 0 ? "selected" : "")>No Options</option>
+                            <option value="1" @(question.AnswerType == 1 ? "selected" : "")>With Options</option> *@
+                        </select>
+                    </div>
+
+                    <div id="options-container-@i" class="option-group" style="@(question.AnswerType == 1 ? "display:block;" : "display:none;")">
+                        @if (question.Options != null)
+                        {
+                            @for (var j = 0; j < question.Options.Count; j++)
+                            {
+                                var option = question.Options[j];
+                                <div>
+                                    <input name="Questions[@i].Options[@j].OptionText" value="@option.OptionText" />
+                                    <button type="button" onclick="removeOption(@i, @j)">Remove Option</button>
+                                </div>
+                            }
+                        }
+                        <button type="button" onclick="addOption(@i)">Add Option</button>
+                    </div>
+
+                    <button type="button" onclick="removeQuestion(@i)">Remove Question</button>
+                </div>
+            }
+        </div>
+
+        <button type="button" onclick="addQuestion()">Add Question</button>
+
+        <div class="form-group">
+            <button type="submit">Save Changes</button>
+        </div>
+    </form>
+
+    <a class="button" asp-controller="Quiz" asp-action="Index">Back to List</a>
+
+    <script>
+        function updateAnswerType(index) {
+            var answerType = document.querySelector(`#questions-container [data-index='${index}'] select`).value;
+            var optionsContainer = document.querySelector(`#options-container-${index}`);
+            optionsContainer.style.display = answerType == 1 ? 'block' : 'none';
+        }
+
+        function addOption(questionIndex) {
+            var optionsContainer = document.querySelector(`#options-container-${questionIndex}`);
+            var newOptionIndex = optionsContainer.children.length;
+            var optionHtml = `<div>
+                <input type="text" name="Questions[${questionIndex}].Options[${newOptionIndex}].OptionText" />
+                <button type="button" onclick="removeOption(${questionIndex}, ${newOptionIndex})">Remove Option</button>
+            </div>`;
+            optionsContainer.insertAdjacentHTML('beforeend', optionHtml);
+        }
+
+        function removeOption(questionIndex, optionIndex) {
+            var optionsContainer = document.querySelector(`#options-container-${questionIndex}`);
+            var optionDiv = optionsContainer.children[optionIndex];
+            if (optionDiv) {
+                optionsContainer.removeChild(optionDiv);
+            }
+        }
+
+        function addQuestion() {
+            var questionsContainer = document.getElementById('questions-container');
+            var questionIndex = questionsContainer.children.length;
+            var questionHtml = `<div class="question-group" data-index="${questionIndex}">
+                <h3>Question ${questionIndex}</h3>
+                <div class="form-group">
+                    <label>Question Text</label>
+                    <input type="text" name="Questions[${questionIndex}].QuestionText" />
+                </div>
+
+                <div class="form-group">
+                    <label>Answer Type</label>
+                    <select name="Questions[${questionIndex}].AnswerType" onchange="updateAnswerType(${questionIndex})">
+                        <option value="0">No Options</option>
+                        <option value="1">With Options</option>
+                    </select>
+                </div>
+
+                <div id="options-container-${questionIndex}" class="option-group" style="display:none;">
+                    <button type="button" onclick="addOption(${questionIndex})">Add Option</button>
+                </div>
+
+                <button type="button" onclick="removeQuestion(${questionIndex})">Remove Question</button>
+            </div>`;
+            questionsContainer.insertAdjacentHTML('beforeend', questionHtml);
+        }
+
+        function removeQuestion(index) {
+            var questionsContainer = document.getElementById('questions-container');
+            var questionGroup = document.querySelector(`.question-group[data-index='${index}']`);
+            if (questionGroup) {
+                questionsContainer.removeChild(questionGroup);
+            }
+        }
+    </script>
+</body>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QuizPlatform.DTO.Quiz;
 using QuizPlatform.Response;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
@@ -10,6 +11,8 @@ namespace QuizPlatform.Controllers
     {
 
         private static QuizDto? _cachedQuizDto;
+        private static MemoryStream? image;
+
         private readonly HttpClient _httpClient;
         public QuizController(IHttpClientFactory httpClientFactory)
         {
@@ -22,10 +25,16 @@ namespace QuizPlatform.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] QuizDto inDto)
+        public async Task<IActionResult> Create([FromForm] QuizDto inDto)
         {
+            var fileStream = inDto.Image.OpenReadStream();
+            image = new MemoryStream();
+            
+                await fileStream.CopyToAsync(image);
+                image.Seek(0, SeekOrigin.Begin);
 
-            _cachedQuizDto= inDto;
+
+            _cachedQuizDto = inDto;
             return Redirect("/Quiz/CreateQuestions");
         }
 
@@ -42,47 +51,43 @@ namespace QuizPlatform.Controllers
 
             _cachedQuizDto.Questions= inDto;
 
-            using var content = new MultipartFormDataContent();
-
-            // Serialize the QuizDto properties
+            var content = new MultipartFormDataContent();
             content.Add(new StringContent(_cachedQuizDto.Id.ToString()), "Id");
             content.Add(new StringContent(_cachedQuizDto.Name), "Name");
-            if (_cachedQuizDto.Description != null)
-            {
-                content.Add(new StringContent(_cachedQuizDto.Description), "Description");
-            }
-            if (_cachedQuizDto.Date.HasValue)
-            {
-                content.Add(new StringContent(_cachedQuizDto.Date.Value.ToString("o")), "Date");
-            }
+            content.Add(new StringContent(_cachedQuizDto.Description), "Description");
+         //   content.Add(new StreamContent(image), "Image", _cachedQuizDto.Image.FileName);
+            content.Add(new StringContent(_cachedQuizDto.Date.Value.ToString("o")), "Date");
+            var questionsJson = System.Text.Json.JsonSerializer.Serialize(_cachedQuizDto.Questions);
+            content.Add(new StringContent(questionsJson, System.Text.Encoding.UTF8, "application/json"), "Question");
 
-            if (_cachedQuizDto.Image != null)
-            {
-                try
+
+         
+
+            var fileContent = new StreamContent(image);
+           fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(_cachedQuizDto.Image.ContentType);
+
+          //  content.Add(fileContent, "Image", _cachedQuizDto.Image.FileName);
+
+            try
                 {
 
-                    using var memoryStream = new MemoryStream();
-                    await _cachedQuizDto.Image.CopyToAsync(memoryStream);
-                    memoryStream.Position = 0;
+                 
 
-                    var fileContent = new StreamContent(memoryStream);
-                    fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(_cachedQuizDto.Image.ContentType);
+                fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(_cachedQuizDto.Image.ContentType);
+                fileContent.Headers.ContentLength = _cachedQuizDto.Image.Length;
 
                     content.Add(fileContent, "Image", _cachedQuizDto.Image.FileName);
-
-                                   
-                }
-                catch (Exception ex)
+            }
+            catch (Exception ex)
                 {
-                                       return StatusCode(500, "Error processing file.");
-                }
-            }
 
-            if (_cachedQuizDto.Questions != null && _cachedQuizDto.Questions.Count > 0)
-            {
-                var questionsJson = System.Text.Json.JsonSerializer.Serialize(_cachedQuizDto.Questions);
-                content.Add(new StringContent(questionsJson, System.Text.Encoding.UTF8, "application/json"), "Questions");
-            }
+                    throw new Exception();
+                }
+
+
+
+
+            
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Request.Cookies["AccessToken"]);
 
             var response = await _httpClient.PostAsync("Quiz/CreateQuiz", content);
